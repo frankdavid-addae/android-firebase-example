@@ -3,6 +3,7 @@ package com.example.firebaseexample;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -21,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
     EditText etTitle, etGenre;
     TextView tvRetrievedData;
-    Button btnSendData, btnGetData;
+    Button btnSendData, btnGetData, btnSignOut;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
         tvRetrievedData = findViewById(R.id.tvRetrievedData);
         btnSendData = findViewById(R.id.btnSendData);
         btnGetData = findViewById(R.id.btnGetData);
+        btnSignOut = findViewById(R.id.btnSignOut);
 
         btnSendData.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,6 +76,16 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
+            }
+        });
+
+        btnSignOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseAuth.getInstance().signOut();
+                startActivity(new Intent(MainActivity.this, SignInActivity.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                finish();
             }
         });
     }

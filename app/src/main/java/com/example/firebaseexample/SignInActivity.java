@@ -15,38 +15,42 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class SignUpActivity extends AppCompatActivity {
+public class SignInActivity extends AppCompatActivity {
 
     TextInputEditText etEmailAddress, etPassword;
-    Button btnSignUp;
+    Button btnSignIn;
     private FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_up);
+        setContentView(R.layout.activity_sign_in);
 
         etEmailAddress = findViewById(R.id.etEmailAddress);
         etPassword = findViewById(R.id.etPassword);
-        btnSignUp = findViewById(R.id.btnSignUp);
+        btnSignIn = findViewById(R.id.btnSignIn);
 
-        btnSignUp.setOnClickListener(new View.OnClickListener() {
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            // User is signed in, redirect to main screen
+            startActivity(new Intent(SignInActivity.this, MainActivity.class));
+        }
+
+        btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 firebaseAuth = FirebaseAuth.getInstance();
-                firebaseAuth.createUserWithEmailAndPassword(
+                firebaseAuth.signInWithEmailAndPassword(
                         etEmailAddress.getText().toString(),
                         etPassword.getText().toString()
-                ).addOnCompleteListener(SignUpActivity.this, new OnCompleteListener<AuthResult>() {
+                ).addOnCompleteListener(SignInActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            firebaseAuth.signOut();
-                            startActivity(new Intent(SignUpActivity.this, SignInActivity.class));
+                            startActivity(new Intent(SignInActivity.this, MainActivity.class));
                             finish();
-                            Toast.makeText(SignUpActivity.this, "Successfully signed up.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SignInActivity.this, "Successfully signed in.", Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(SignUpActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SignInActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
