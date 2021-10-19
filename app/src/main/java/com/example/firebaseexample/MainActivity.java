@@ -19,7 +19,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
 
-    EditText etData;
+    EditText etTitle, etGenre;
     TextView tvRetrievedData;
     Button btnSendData, btnGetData;
 
@@ -28,7 +28,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        etData = findViewById(R.id.etData);
+        etTitle = findViewById(R.id.etTitle);
+        etGenre = findViewById(R.id.etGenre);
         tvRetrievedData = findViewById(R.id.tvRetrievedData);
         btnSendData = findViewById(R.id.btnSendData);
         btnGetData = findViewById(R.id.btnGetData);
@@ -36,10 +37,11 @@ public class MainActivity extends AppCompatActivity {
         btnSendData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String data = etData.getText().toString();
+                String title = etTitle.getText().toString();
+                String genre = etGenre.getText().toString();
 
                 // Get firebase database instance and save the data
-                FirebaseDatabase.getInstance().getReference("data").setValue(data)
+                FirebaseDatabase.getInstance().getReference("movies").push().setValue(new Movie(title, genre))
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -56,10 +58,14 @@ public class MainActivity extends AppCompatActivity {
         btnGetData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FirebaseDatabase.getInstance().getReference("data").addValueEventListener(new ValueEventListener() {
+                FirebaseDatabase.getInstance().getReference("movies").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        tvRetrievedData.setText(snapshot.getValue().toString());
+//                        tvRetrievedData.setText(snapshot.getValue().toString());
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            Movie movie = dataSnapshot.getValue(Movie.class);
+                            tvRetrievedData.setText(tvRetrievedData.getText().toString() + ", " + movie.getTitle());
+                        }
                     }
 
                     @Override
